@@ -1,22 +1,24 @@
-from pytube import YouTube
 import sys
-import os
+from yt_dlp import YoutubeDL
 
-if len(sys.argv) < 2:
-    print("Usage: python script.py <YouTube URL>")
-    sys.exit(1)
+def main():
+    if len(sys.argv) < 2:
+        print("Usage: python yt_downloader.py <YouTube URL>")
+        sys.exit(1)
 
-link = sys.argv[1]
-yt = YouTube(link)
+    url = sys.argv[1]
 
-print("Title:", yt.title)
-print("Views:", yt.views)
+    ydl_opts = {
+        'outtmpl': '%(title)s.%(ext)s',  # Save in current folder, use video title as filename
+        'format': 'best',                 # Download best quality video + audio
+    }
 
-# Get the highest resolution stream
-yd = yt.streams.get_highest_resolution()
+    try:
+        with YoutubeDL(ydl_opts) as ydl:
+            ydl.download([url])
+            print("Download complete!")
+    except Exception as e:
+        print("An error occurred:", e)
 
-# Download to Downloads folder
-download_path = os.path.expanduser("~/Downloads")
-yd.download(download_path)
-
-print("Download completed to:", download_path)
+if __name__ == "__main__":
+    main()
